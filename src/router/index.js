@@ -1,6 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import HomeView from "../views/HomeView.vue";
+import DetailsView from "../views/DetailsView.vue";
+import LoginView from "../views/LoginView.vue";
 
 Vue.use(VueRouter);
 
@@ -11,13 +13,29 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+    path: "/details",
+    name: "details",
+    component: DetailsView,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        next();
+      } else {
+        next({ name: "login" });
+      }
+    },
+  },
+  {
+    path: "/login", // add new login route
+    name: "login",
+    component: LoginView,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem("token")) {
+        next({ name: "details" });
+      } else {
+        next();
+      }
+    },
   },
 ];
 
